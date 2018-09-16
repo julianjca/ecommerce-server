@@ -77,5 +77,46 @@ module.exports = {
         });
       }
     });
+  },
+
+  checkout : function(req,res){
+    jwt.verify(req.headers.token, process.env.JWT_SECRET, function(err, decoded) {
+      if(!err){
+        User.findOne({
+          email : decoded.email
+        })
+        .then(data=>{
+          User.update({email:decoded.email},{
+            $push : {
+              boughtProducts : req.body.objId
+            }
+          })
+          .then(response=>{
+            res.status(200).json({
+              data : response,
+              msg : "success adding to cart"
+            });
+          })
+          .catch(err=>{
+            res.status(403).json({
+              error : err,
+              msg : "unauthorized"
+            });
+          })
+        })
+        .catch(err=>{
+          res.status(403).json({
+            error : err,
+            msg : "unauthorized"
+          });
+        })
+      }
+      else{
+        res.status(403).json({
+          error : err,
+          msg : "unauthorized"
+        });
+      }
+    });
   }
 };
