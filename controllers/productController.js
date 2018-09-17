@@ -67,4 +67,25 @@ module.exports = {
       });
     });
   },
+
+  search : function(req,res){
+    Product.find({})
+    .then(data=>{
+      const result = [];
+      for(let i =0;i<data.length;i++){
+        if(req.body.searchKey.indexOf(data[i].name) !== -1){
+          result.push(data[i]);
+        }
+      }
+      res.status(200).json({
+        msg : 'success finding data',
+        data : result
+      });
+    })
+    .catch(err=>{
+      res.status(500).json({
+        err
+      });
+    });
+  },
 };
